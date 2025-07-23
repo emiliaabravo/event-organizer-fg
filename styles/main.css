@@ -1,0 +1,54 @@
+@import url('./buttons.css');
+
+body {
+  font-family: Arial, sans-serif;
+  color: #2c2a2a;
+  margin: 0;
+  padding: 0; /* removes unwanted left/right padding */
+  background-color: #c0a7a7;
+}
+
+  .header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+  }
+
+  .navbar {
+    display: flex;
+    width: 100%;
+  }
+
+  .navbar a {
+    flex: 1;
+    text-align: center;
+    text-decoration: none;       /* remove underline */
+    color: #2c2a2a;              /* text color */
+    padding: 1rem;        /* padding around text */
+    background-color: #d1bfdb;   /* subtle background */          /* rounded corners */
+    font-weight: bold;
+    border-right: 1px solid #c0a7a7;
+    transition: background-color 0.3s;
+  }
+  .navbar a:last-child {
+    border-right: none;
+  }
+  
+  .navbar a:hover {
+    background-color: #efdef3;      /* hover effect */
+  }
+
+
+  .body-content {
+    padding: 2rem;
+  }
+
+  .logo-wrapper {
+    background-color: rgb(255, 255, 255);
+    width: 100vw;
+  }
+  .logo {
+    height: 100px;
+  }
