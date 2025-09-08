@@ -29,6 +29,6 @@ body {
   color: #2563eb;
 }
 
-input, textarea, select {
+input, textarea, select, span{
   color: black !important;
 }

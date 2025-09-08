@@ -12,8 +12,21 @@ export async function POST(request: NextRequest) {
     const eventData = await request.json()
     
     const { data, error } = await supabase
-      .from('events')
-      .insert(eventData)
+    .from('events')
+    .insert({
+      title: eventData.title,
+      date: eventData.date,
+      start_time: eventData.start_time,
+      end_time: eventData.end_time,
+      setup_time: eventData.setup_time,
+      venue: eventData.venue,
+      address: eventData.address,
+      company_contact: eventData.company_contact,
+      capacity: eventData.capacity,
+      description: eventData.description,
+      status: eventData.status,
+      coordinator_email: 'emiliaabravo19@gmail.com' // MY email id
+    })
       .select()
       .single()
     

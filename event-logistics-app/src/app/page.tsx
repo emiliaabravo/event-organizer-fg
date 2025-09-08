@@ -2,20 +2,30 @@
 
 import { useState, useEffect } from 'react'
 import EventForm from '@/components/EventForm'
+import EventDetail from '@/components/EventDetail'
 
 interface Event {
   id: string
   title: string
   date: string
+  start_time?: string
+  end_time?: string
+  setup_time?: string
+  venue: string
+  address?: string
+  company_contact?: string
+  capacity?: number
   status: string
+  coordinator_email: string
+  created_at: string
+  description?: string
 }
 
 export default function Home() {
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
-
-
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   useEffect(() => {
     fetchEvents()
   }, [])
@@ -37,7 +47,6 @@ export default function Home() {
   }
 
   if (loading) return <div className="p-8">Loading events...</div>
-
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
@@ -55,6 +64,7 @@ export default function Home() {
           <EventForm onEventCreated={handleEventCreated} />
         </div>
       )}
+
       <div className="grid gap-4">
         {events.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
@@ -62,8 +72,12 @@ export default function Home() {
           </div>
         ) : (
           events.map((event) => (
-            <div key={event.id} className="border p-4 rounded-lg bg-white shadow-sm">
-              <h2 className="text-xl font-semibold">{event.title}</h2>
+            <div 
+              key={event.id} 
+              className="border p-4 rounded-lg bg-white shadow-sm transition-shadow cursor-pointer hover:shadow-md"
+              onClick={() => setSelectedEvent(event)}
+            > 
+              <h2 className="text-black text-xl font-semibold">{event.title}</h2>
               <p className="text-gray-600">{new Date(event.date).toLocaleDateString()}</p>
               <span className={`px-2 py-1 rounded text-sm ${
                 event.status === 'active' ? 'bg-green-100 text-green-800' : 
@@ -76,6 +90,13 @@ export default function Home() {
           ))
         )}
       </div>
+
+      {selectedEvent && (
+        <EventDetail 
+          event={selectedEvent} 
+          onClose={() => setSelectedEvent(null)} 
+        />
+      )}
     </div>
   )
 }

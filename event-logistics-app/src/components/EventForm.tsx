@@ -5,9 +5,16 @@ import { useState } from 'react'
 interface EventFormData {
   title: string
   date: string
-  address: string
-  description: string
+  start_time?: string
+  end_time?: string
+  setup_time?: string
+  venue: string
+  address?: string
+  company_contact?: string
+  capacity?: number
+  description?: string
   status: string
+  coordinator_email: string
 }
 
 interface EventFormProps {
@@ -18,9 +25,16 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
   const [formData, setFormData] = useState<EventFormData>({
     title: '',
     date: '',
+    start_time: '',
+    end_time: '',
+    setup_time: '',
+    venue: '',
     address: '',
+    company_contact: '',
+    capacity: 0,
     description: '',
-    status: 'draft'
+    status: 'draft',
+    coordinator_email: 'emiliaabravo19@gmail.com'
   })
   
   const [loading, setLoading] = useState(false)
@@ -46,9 +60,16 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
         setFormData({
           title: '',
           date: '',
+          start_time: '',
+          end_time: '',
+          setup_time: '',
+          venue: '',
           address: '',
+          company_contact: '',
+          capacity: 0,
           description: '',
-          status: 'draft'
+          status: 'draft',
+          coordinator_email: 'emiliaabravo19@gmail.com'
         })
         onEventCreated() // Refresh the events list
       } else {
@@ -113,7 +134,66 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+        {/* Start Time */}
+        <div>
+          <label htmlFor="start_time" className="block text-sm font-medium text-gray-700 mb-1">
+            Start Time
+          </label>
+          <input
+            type="time"
+            id="start_time"
+            name="start_time"
+            value={formData.start_time}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
+        {/* End Time */}
+        <div>
+          <label htmlFor="end_time" className="block text-sm font-medium text-gray-700 mb-1">
+            End Time
+          </label>
+          <input
+            type="time"
+            id="end_time"
+            name="end_time"
+            value={formData.end_time}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Setup Time */}
+        <div>
+          <label htmlFor="setup_time" className="block text-sm font-medium text-gray-700 mb-1">
+            Setup Time
+          </label>
+          <input
+            type="time"
+            id="setup_time"
+            name="setup_time"
+            value={formData.setup_time}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        {/* Venue */}
+        <div>
+          <label htmlFor="venue" className="block text-sm font-medium text-gray-700 mb-1">
+            Venue *
+          </label>
+          <input
+            type="text"
+            id="venue"
+            name="venue"
+            value={formData.venue}
+            onChange={handleInputChange}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter venue name"
+          />
+        </div>
         <div>
           <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
             Address
@@ -126,6 +206,37 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
             onChange={handleInputChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter event address"
+          />
+        </div>
+        {/* Company Contact */}
+        <div>
+          <label htmlFor="company_contact" className="block text-sm font-medium text-gray-700 mb-1">
+            Company/Contact
+          </label>
+          <input
+            type="text"
+            id="company_contact"
+            name="company_contact"
+            value={formData.company_contact}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter company or contact name"
+          />
+        </div>
+
+        {/* Capacity */}
+        <div>
+          <label htmlFor="capacity" className="block text-sm font-medium text-gray-700 mb-1">
+            Capacity
+          </label>
+          <input
+            type="number"
+            id="capacity"
+            name="capacity"
+            value={formData.capacity}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter maximum capacity"
           />
         </div>
 
