@@ -1,5 +1,5 @@
 'use client'
-export default function SignUpForm({ eventId }: { eventId: string }) {
+export default function SignUpForm(){
   // client-only logic here later (state, validation, uploads)
-  return <p className="text-sm text-gray-500 mb-6">Event ID: {eventId}</p>
+  return <p className="text-sm text-gray-500 mb-6">soon to be implemented</p>
 }
