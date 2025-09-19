@@ -76,7 +76,7 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
         const error = await response.json()
         setMessage(`Error: ${error.error}`)
       }
-    } catch (error: unknown) {
+    } catch {
       setMessage('Error creating event. Please try again.')
     } finally {
       setLoading(false)

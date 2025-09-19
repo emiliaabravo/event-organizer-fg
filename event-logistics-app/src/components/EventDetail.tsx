@@ -244,7 +244,7 @@ function QRCodeTab({ event, qrCodeUrl, onGenerate, showQRCode }: {
 }
 
 // Payments Tab
-function PaymentsTab({ event }: { event: Event }) {
+function PaymentsTab({}: { event: Event }) {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Post-Event Payments</h3>
