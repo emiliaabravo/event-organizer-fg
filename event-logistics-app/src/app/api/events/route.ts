@@ -68,9 +68,10 @@ export async function POST(request: NextRequest) {
     }
     
     return NextResponse.json(data)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ API Error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({  error: error instanceof Error ? error.message : 'Unknown error' 
+    }, { status: 500 })
   }
 }
 
@@ -83,7 +84,9 @@ export async function GET() {
     if (error) throw error
     
     return NextResponse.json(data)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch (error: unknown) {
+    return NextResponse.json({ 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    }, { status: 500 })
   }
 }

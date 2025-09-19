@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState} from 'react'
 import QRCode from 'qrcode'
+import Image from 'next/image'
 
 interface Event {
   id: string
@@ -154,10 +155,11 @@ function OverviewTab({ event }: { event: Event }) {
   )
 }
 // Logistics Tab
-function LogisticsTab({ event }: { event: Event }) {
+//to add event param later
+function LogisticsTab({}: { event: Event }) {
     return (
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Event Logistics</h3>
+        <h3 className="text-lg font-semibold text-black">Event Logistics</h3>
         <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
           <p className="text-yellow-800">Logistics management coming soon!</p>
           <p className="text-sm text-yellow-600 mt-2">This will include your checklist items, setup requirements, and task assignments.</p>
@@ -166,7 +168,8 @@ function LogisticsTab({ event }: { event: Event }) {
     )
   }
   // Participants Tab
-function ParticipantsTab({ event }: { event: Event }) {
+  //to add event param later
+function ParticipantsTab({ }: { event: Event }) {
     return (
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Event Participants</h3>
@@ -210,7 +213,7 @@ function QRCodeTab({ event, qrCodeUrl, onGenerate, showQRCode }: {
         <div className="text-center">
           <h4 className="font-medium text-gray-900 mb-4">QR Code for {event.title}</h4>
           <div className="bg-white p-4 rounded-lg border inline-block">
-            <img src={qrCodeUrl} alt="QR Code" className="mx-auto" />
+            <Image src={qrCodeUrl} alt="QR Code" className="mx-auto" width={300} height={300}/>
           </div>
           <p className="text-sm text-gray-600 mt-4">
             Print this QR code or display it on a screen at your event
