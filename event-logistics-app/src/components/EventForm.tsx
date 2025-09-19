@@ -90,6 +90,7 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
       [name]: value
     }))
   }
+    
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md border">
@@ -115,7 +116,7 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
             value={formData.title}
             onChange={handleInputChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 "
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter event title"
           />
         </div>
@@ -125,7 +126,7 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
             Event Date *
           </label>
           <input
-            type="datetime-local"
+            type="date"
             id="date"
             name="date"
             value={formData.date}
@@ -134,51 +135,52 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        {/* Start Time */}
+
         <div>
           <label htmlFor="start_time" className="block text-sm font-medium text-gray-700 mb-1">
-            Start Time
+            Start Time 
           </label>
           <input
-            type="time"
+            type="text"
             id="start_time"
             name="start_time"
             value={formData.start_time}
             onChange={handleInputChange}
+            placeholder="00 pm/am"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* End Time */}
         <div>
           <label htmlFor="end_time" className="block text-sm font-medium text-gray-700 mb-1">
             End Time
           </label>
           <input
-            type="time"
+            type="text"
             id="end_time"
             name="end_time"
             value={formData.end_time}
             onChange={handleInputChange}
+            placeholder="00 pm/am"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* Setup Time */}
         <div>
           <label htmlFor="setup_time" className="block text-sm font-medium text-gray-700 mb-1">
             Setup Time
           </label>
           <input
-            type="time"
+            type="text"
             id="setup_time"
             name="setup_time"
             value={formData.setup_time}
             onChange={handleInputChange}
+            placeholder="00 pm/am"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        {/* Venue */}
+
         <div>
           <label htmlFor="venue" className="block text-sm font-medium text-gray-700 mb-1">
             Venue *
@@ -194,6 +196,7 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
             placeholder="Enter venue name"
           />
         </div>
+
         <div>
           <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
             Address
@@ -208,7 +211,7 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
             placeholder="Enter event address"
           />
         </div>
-        {/* Company Contact */}
+
         <div>
           <label htmlFor="company_contact" className="block text-sm font-medium text-gray-700 mb-1">
             Company/Contact
@@ -224,7 +227,6 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
           />
         </div>
 
-        {/* Capacity */}
         <div>
           <label htmlFor="capacity" className="block text-sm font-medium text-gray-700 mb-1">
             Capacity
@@ -287,3 +289,4 @@ export default function EventForm({ onEventCreated }: EventFormProps) {
     </div>
   )
 }
+
