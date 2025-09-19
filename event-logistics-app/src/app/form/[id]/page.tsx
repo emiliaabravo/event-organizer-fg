@@ -7,7 +7,7 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="p-6 max-w-md mx-auto">
       <h1 className="text-2xl font-bold mb-4">Event Signup</h1>
-      <SignUpForm />
+      <SignUpForm eventId={id} />
     </div>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState} from 'react'
+import { useState, useEffect} from 'react'
 import QRCode from 'qrcode'
 import Image from 'next/image'
 
@@ -20,7 +20,13 @@ interface Event {
   created_at: string
   description?: string
 }
-
+interface Participant {
+  id: string
+  full_name: string
+  email: string
+  phone_number: string
+  event_id: string
+}
 interface EventDetailProps {
     event: Event
     onClose: () => void
@@ -30,15 +36,36 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
     const [activeTab, setActiveTab] = useState('overview')
     const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
     const [showQRCode, setShowQRCode] = useState(false)
+    const [participants, setParticipants] = useState<Participant[]>([])
+    const [raffleWinners, setRaffleWinners] = useState<Participant[]>([])
+    const [showRaffle, setShowRaffle] = useState(false)
 
     const tabs = [
         { id: 'overview', label: 'Overview' },
-        { id: 'team', label: 'Setup Team' },
+        { id: 'team', label: 'Team' },
         { id: 'logistics', label: 'Logistics' },
         { id: 'participants', label: 'Participants' },
         { id: 'qr-code', label: 'QR Code' },
         { id: 'payments', label: 'Payments' }
     ]
+  // Fetch participants when participants tab is active
+  useEffect(() => {
+    if (activeTab === 'participants') {
+      fetchParticipants()
+    }
+  }, [activeTab, event.id])
+  const fetchParticipants = async () => {
+    try {
+      const response = await fetch(`/api/participants?eventId=${event.id}`)
+      if (response.ok) {
+        const data = await response.json()
+        setParticipants(data)
+      }
+    } catch (error) {
+      console.error('Error fetching participants:', error)
+    }
+  }
+
     const generateQRCode = async () => {
     try {
         // Create the form URL for this specific event
@@ -59,6 +86,25 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
         console.error('Error generating QR code:', error)
         }
     }
+
+    const conductRaffle = () => {
+      if (participants.length === 0) return
+      
+      const availableParticipants = participants.filter(p => 
+        !raffleWinners.some(w => w.id === p.id)
+      )
+      
+      if (availableParticipants.length === 0) {
+        alert('All participants have already won!')
+        return
+      }
+      const randomIndex = Math.floor(Math.random() * availableParticipants.length)
+      const winner = availableParticipants[randomIndex]
+      
+      setRaffleWinners(prev => [...prev, winner])
+      setShowRaffle(true)
+    }
+    const closeRaffle = () => setShowRaffle(false)
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-hidden">
@@ -101,8 +147,15 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
             {/* Content */}
             <div className="p-6 overflow-y-auto max-h-[60vh]">
             {activeTab === 'overview' && <OverviewTab event={event} />}
+            {activeTab === 'team' && <TeamTab event={event} />}
             {activeTab === 'logistics' && <LogisticsTab event={event} />}
-            {activeTab === 'participants' && <ParticipantsTab event={event} />}
+            {activeTab === 'participants' && <ParticipantsTab 
+              participants={participants}
+              raffleWinners={raffleWinners}
+              showRaffle={showRaffle}
+              onConductRaffle={conductRaffle}
+              onCloseRaffle={closeRaffle}
+            />}
             {activeTab === 'qr-code' && <QRCodeTab event={event} qrCodeUrl={qrCodeUrl} onGenerate={generateQRCode} showQRCode={showQRCode} />}
             {activeTab === 'payments' && <PaymentsTab event={event} />}
             </div>
@@ -154,12 +207,41 @@ function OverviewTab({ event }: { event: Event }) {
     </div>
   )
 }
+// Team Tab
+function TeamTab({ event }: { event: Event }) {
+  const setupTeam = [
+    { name: "Emilia Bravo", role: "set up team coordinator", phone: "6783604682" },
+    { name: "Maria Garcia", role: "Equipment Manager", phone: "+1 (555) 234-5678" },
+  ]
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Team </h3>
+        <button 
+          onClick={() => window.open(`/team/${event.id}`, '_blank')}
+          className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">
+          Team View
+        </button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {setupTeam.map((member, index) => (
+          <div key={index} className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="font-medium text-gray-900">{member.name}</h4>
+            <p className="text-sm text-gray-600">{member.role}</p>
+            <p className="text-sm text-blue-600">{member.phone}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 // Logistics Tab
 //to add event param later
 function LogisticsTab({}: { event: Event }) {
     return (
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-black">Event Logistics</h3>
+        <h3 className="text-lg font-semibold ">Event Logistics</h3>
         <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
           <p className="text-yellow-800">Logistics management coming soon!</p>
           <p className="text-sm text-yellow-600 mt-2">This will include your checklist items, setup requirements, and task assignments.</p>
@@ -169,17 +251,68 @@ function LogisticsTab({}: { event: Event }) {
   }
   // Participants Tab
   //to add event param later
-function ParticipantsTab({ }: { event: Event }) {
+  function ParticipantsTab({ 
+    participants, 
+    raffleWinners, 
+    showRaffle, 
+    onConductRaffle, 
+    onCloseRaffle 
+  }: { 
+    participants: Participant[]
+    raffleWinners: Participant[]
+    showRaffle: boolean
+    onConductRaffle: () => void
+    onCloseRaffle: () => void
+  }) {
     return (
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Event Participants</h3>
-        <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-          <p className="text-blue-800">Participant management coming soon!</p>
-          <p className="text-sm text-blue-600 mt-2">This will show all people who signed up via QR code and their contact information.</p>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold">
+            Event Participants ({participants.length})
+          </h3>
+          <button
+            onClick={onConductRaffle}
+            disabled={participants.length === 0}
+            className="bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700 disabled:bg-gray-400"
+          >
+            Make Raffle
+          </button>
         </div>
+        {showRaffle && raffleWinners.length > 0 && (
+        <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+          <h4 className="font-semibold text-yellow-800 mb-2">Raffle Winners:</h4>
+          {raffleWinners.map((winner, index) => (
+            <div key={winner.id} className="text-sm text-yellow-700 mb-1">
+              {index + 1}. {winner.full_name} - {winner.email} - {winner.phone_number}
+            </div>
+          ))}
+          <button
+            onClick={onCloseRaffle}
+            className="mt-2 text-xs text-yellow-600 underline"
+          >
+            Close Raffle Results
+          </button>
+        </div>
+      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {participants.map((participant) => (
+          <div key={participant.id} className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="font-medium text-gray-900">{participant.full_name}</h4>
+            <p className="text-sm text-gray-600">{participant.email}</p>
+            <p className="text-sm text-gray-600">{participant.phone_number}</p>
+          </div>
+        ))}
       </div>
-    )
-  }
+
+      {participants.length === 0 && (
+        <div className="text-center text-gray-500 py-8">
+          No participants yet. Share the QR code to get signups!
+        </div>
+      )}
+    </div>
+  )
+}
+
   // QR Code Tab
 function QRCodeTab({ event, qrCodeUrl, onGenerate, showQRCode }: { 
     event: Event, 
