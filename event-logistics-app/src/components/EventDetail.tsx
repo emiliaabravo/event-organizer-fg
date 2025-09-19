@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect} from 'react'
+import { useState, useEffect, useCallback} from 'react'
 import QRCode from 'qrcode'
 import Image from 'next/image'
 
@@ -49,12 +49,8 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
         { id: 'payments', label: 'Payments' }
     ]
   // Fetch participants when participants tab is active
-  useEffect(() => {
-    if (activeTab === 'participants') {
-      fetchParticipants()
-    }
-  }, [activeTab, event.id])
-  const fetchParticipants = async () => {
+  
+  const fetchParticipants = useCallback(async () => {
     try {
       const response = await fetch(`/api/participants?eventId=${event.id}`)
       if (response.ok) {
@@ -64,7 +60,13 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
     } catch (error) {
       console.error('Error fetching participants:', error)
     }
-  }
+  }, [event.id]) 
+  
+  useEffect(() => {
+    if (activeTab === 'participants') {
+      fetchParticipants()
+    }
+  }, [activeTab, fetchParticipants])
 
     const generateQRCode = async () => {
     try {

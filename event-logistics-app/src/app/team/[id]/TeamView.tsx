@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import QRCode from 'qrcode'
 import Image from 'next/image'
@@ -36,12 +36,8 @@ export default function TeamView({ eventId }: TeamViewProps) {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchEventData()
-    fetchParticipants()
-  }, [eventId])
-
-  const fetchEventData = async () => {
+  // Fetch event data
+  const fetchEventData = useCallback(async () => {
     try {
       const response = await fetch('/api/events')
       if (response.ok) {
@@ -54,9 +50,10 @@ export default function TeamView({ eventId }: TeamViewProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [eventId])
 
-  const fetchParticipants = async () => {
+  // Fetch participants
+  const fetchParticipants = useCallback(async () => {
     try {
       console.log('🔍 Fetching participants for eventId:', eventId)
       const response = await fetch(`/api/participants?eventId=${eventId}`)
@@ -72,7 +69,12 @@ export default function TeamView({ eventId }: TeamViewProps) {
     } catch (error) {
       console.error('Error fetching participants:', error)
     }
-  }
+  }, [eventId])
+
+  useEffect(() => {
+    fetchEventData()
+    fetchParticipants()
+  }, [fetchEventData, fetchParticipants]) 
 
   const generateQRCode = async () => {
     try {
@@ -200,8 +202,8 @@ export default function TeamView({ eventId }: TeamViewProps) {
               </div>
             ) : (
               <div className="text-center text-gray-500 py-8">
-                Click "Generate QR Code" to create the registration QR code
-              </div>
+                Click &quot;Generate QR Code&quot; to create the registration QR code
+                </div>
             )}
           </div>
 
