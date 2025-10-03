@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback} from 'react'
-import QRCode from 'qrcode'
 import Image from 'next/image'
+import QRCodeDisplay from './QRCodeDisplay'
 
 interface Event {
   id: string
@@ -34,11 +34,10 @@ interface EventDetailProps {
 
 export default function EventDetail({ event, onClose }: EventDetailProps) {
     const [activeTab, setActiveTab] = useState('overview')
-    const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
-    const [showQRCode, setShowQRCode] = useState(false)
     const [participants, setParticipants] = useState<Participant[]>([])
     const [raffleWinners, setRaffleWinners] = useState<Participant[]>([])
     const [showRaffle, setShowRaffle] = useState(false)
+
 
     const tabs = [
         { id: 'overview', label: 'Overview' },
@@ -49,7 +48,6 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
         { id: 'payments', label: 'Payments' }
     ]
   // Fetch participants when participants tab is active
-  
   const fetchParticipants = useCallback(async () => {
     try {
       const response = await fetch(`/api/participants?eventId=${event.id}`)
@@ -67,28 +65,6 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
       fetchParticipants()
     }
   }, [activeTab, fetchParticipants])
-
-    const generateQRCode = async () => {
-    try {
-        // Create the form URL for this specific event
-        const formUrl = `${window.location.origin}/form/${event.id}`
-        // Generate QR code
-        const qrCodeDataURL = await QRCode.toDataURL(formUrl, {
-            width: 300,
-            margin: 2,
-            color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-            }
-        }) 
-
-        setQrCodeUrl(qrCodeDataURL)
-        setShowQRCode(true)
-        } catch (error) {
-        console.error('Error generating QR code:', error)
-        }
-    }
-
     const conductRaffle = () => {
       if (participants.length === 0) return
       
@@ -158,7 +134,7 @@ export default function EventDetail({ event, onClose }: EventDetailProps) {
               onConductRaffle={conductRaffle}
               onCloseRaffle={closeRaffle}
             />}
-            {activeTab === 'qr-code' && <QRCodeTab event={event} qrCodeUrl={qrCodeUrl} onGenerate={generateQRCode} showQRCode={showQRCode} />}
+            {activeTab === 'qr-code' && <QRCodeTab event={event} />}
             {activeTab === 'payments' && <PaymentsTab event={event} />}
             </div>
         </div>
@@ -314,69 +290,16 @@ function LogisticsTab({}: { event: Event }) {
     </div>
   )
 }
-
   // QR Code Tab
-function QRCodeTab({ event, qrCodeUrl, onGenerate, showQRCode }: { 
-    event: Event, 
-    qrCodeUrl: string, 
-    onGenerate: () => void, 
-    showQRCode: boolean 
-  }) {
-    const formUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/form/${event.id}`
-  
+function QRCodeTab({ event }: { event: Event }) {
     return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">QR Code for Event Signup</h3>
-          <button
-            onClick={onGenerate}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
-          >
-            Generate QR Code
-          </button>
-        </div>
-        <div className="bg-gray-50 p-4 rounded-lg">
-        <h4 className="font-medium text-gray-900 mb-2">Form URL:</h4>
-        <p className="text-sm text-gray-600 font-mono bg-white p-2 rounded border">
-          {formUrl}
-        </p>
-        <p className="text-xs text-gray-500 mt-1">
-          This URL will be encoded in the QR code. People can scan it to access the signup form.
-        </p>
-      </div>
-      {showQRCode && qrCodeUrl && (
-        <div className="text-center">
-          <h4 className="font-medium text-gray-900 mb-4">QR Code for {event.title}</h4>
-          <div className="bg-white p-4 rounded-lg border inline-block">
-            <Image src={qrCodeUrl} alt="QR Code" className="mx-auto" width={300} height={300}/>
-          </div>
-          <p className="text-sm text-gray-600 mt-4">
-            Print this QR code or display it on a screen at your event
-          </p>
-          <div className="mt-4 space-x-2">
-            <button
-              onClick={() => {
-                const link = document.createElement('a')
-                link.download = `qr-code-${event.title.replace(/\s+/g, '-')}.png`
-                link.href = qrCodeUrl
-                link.click()
-              }}
-              className="bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700"
-            >
-              Download QR Code
-            </button>
-            <button
-              onClick={() => navigator.clipboard.writeText(formUrl)}
-              className="bg-gray-600 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-700"
-            >
-              Copy URL
-              </button>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
+      <QRCodeDisplay
+        eventId={event.id}
+        eventTitle={event.title}
+        showTitle={true}
+      />
+    )
+  }
 
 // Payments Tab
 function PaymentsTab({}: { event: Event }) {
